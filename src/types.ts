@@ -11,4 +11,5 @@ export interface PetBoxData {
   badgeColor: string; // Color of the text bubble badge
   petIcon: string; // A Lucide icon key or name
   description: string; // Short stylized description of what kind of pet it is
+  attributes: string; // Elemental attributes, e.g., "普通/机械"
 }

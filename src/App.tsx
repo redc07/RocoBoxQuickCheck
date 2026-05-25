@@ -3,13 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useMemo } from "react";
-import { Search, X, HelpCircle, Gamepad2, Compass, Ban } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Search, X, HelpCircle, Gamepad2, Compass, Ban, Trash2 } from "lucide-react";
 import { PETS_DATABASE } from "./data/pets";
 import PetCard from "./components/PetCard";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [petCounts, setPetCounts] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem("pet_box_counts");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  // Automatically save counters to localStorage
+  useEffect(() => {
+    localStorage.setItem("pet_box_counts", JSON.stringify(petCounts));
+  }, [petCounts]);
 
   const hasActiveSearch = searchQuery.trim().length > 0;
 
@@ -22,17 +35,17 @@ export default function App() {
         return { pet, isMatched: false };
       }
 
-      // 1. Omitted pet name & initials search matching as requested by user to only matching clues
-      const isNameMatch = false;
+      // 1. Name Match (e.g. "音" or "音碟吼")
+      const isNameMatch = pet.name.toLowerCase().includes(queryClean);
       
       // 2. Direct Clue character substring (e.g. "沸腾", "噼啪")
       const isHintMatch = pet.hint.toLowerCase().includes(queryClean);
       
-      // 3. Omitted name pinyin matches
-      const isPinyinMatch = false;
+      // 3. Name pinyin matches
+      const isPinyinMatch = pet.pinyinName.toLowerCase().includes(queryClean);
       
-      // 4. Omitted name initials matches
-      const isPinyinInitialsMatch = false;
+      // 4. Name initials matches
+      const isPinyinInitialsMatch = pet.pinyinInitials.toLowerCase().includes(queryClean);
 
       // 5. Keyword exact/partial match (e.g. "穿透力")
       const isKeywordMatch = pet.keywords.some(kw => kw.toLowerCase().includes(queryClean));
@@ -45,9 +58,14 @@ export default function App() {
       // 7. Full Hint Clue Initials substring match (e.g. "cl" matches "传来", "pps" matches "噼啪声")
       const isHintInitialsMatch = pet.hintInitials.toLowerCase().includes(queryClean);
 
-      const isMatched = isNameMatch || isHintMatch || isPinyinMatch || 
+      // 8. Element Attributes Match (e.g., "火" or "机械")
+      const isAttributeMatch = pet.attributes.toLowerCase().includes(queryClean);
+
+      const isMatched = pet.id === "other" ||
+                        isNameMatch || isHintMatch || isPinyinMatch || 
                         isPinyinInitialsMatch || isKeywordMatch || 
-                        isKeywordInitialsMatch || isHintInitialsMatch;
+                        isKeywordInitialsMatch || isHintInitialsMatch ||
+                        isAttributeMatch;
 
       return { pet, isMatched };
     });
@@ -72,6 +90,25 @@ export default function App() {
     setSearchQuery("");
   };
 
+  const handleIncrement = (id: string) => {
+    setPetCounts(prev => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }));
+    setSearchQuery("");
+  };
+
+  const handleDecrement = (id: string) => {
+    setPetCounts(prev => ({
+      ...prev,
+      [id]: Math.max(0, (prev[id] || 0) - 1)
+    }));
+  };
+
+  const handleClearAllCounts = () => {
+    setPetCounts({});
+  };
+
   return (
     <div className="h-screen md:overflow-hidden bg-slate-950 text-slate-200 font-sans selection:bg-amber-400/30 selection:text-amber-150 p-2 sm:p-3 flex flex-col gap-1.5 overflow-y-auto md:overflow-y-hidden">
       
@@ -81,16 +118,25 @@ export default function App() {
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-amber-400 shrink-0" size={15} />
             <h1 className="text-sm md:text-base font-black tracking-tight text-white flex items-center gap-1.5">
-              <span>随从盒子秘籍极速查询</span>
-              <span className="text-[9px] font-mono font-medium bg-amber-400/10 text-amber-400 border border-amber-400/20 px-1 rounded">
-                密语极速版
-              </span>
+              <span>洛克王国·世界S2盒子提示词极速查询与记录</span>
             </h1>
           </div>
 
-          <div className="text-[10px] text-slate-500 bg-slate-900/40 border border-slate-900 px-2 py-0.5 rounded flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>3行6列一页即现 • 18怪兽全收录</span>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Direct click to clear all scores */}
+            <button
+              onClick={handleClearAllCounts}
+              className="text-[10px] bg-rose-500/10 text-rose-300 border border-rose-500/20 hover:bg-rose-500/25 active:bg-rose-500/40 px-2 py-0.5 rounded flex items-center gap-1 font-semibold transition-all"
+              title="清空所有随从的计数"
+            >
+              <Trash2 size={11} />
+              <span>清空所有计数</span>
+            </button>
+
+            <div className="text-[10px] text-slate-500 bg-slate-900/40 border border-slate-900 px-2 py-0.5 rounded flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>QQ 524254767</span>
+            </div>
           </div>
         </header>
 
@@ -148,6 +194,9 @@ export default function App() {
               searchQuery={searchQuery}
               isMatched={isMatched}
               hasActiveSearch={hasActiveSearch}
+              count={petCounts[pet.id] || 0}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
             />
           ))}
         </section>
@@ -156,7 +205,6 @@ export default function App() {
       {/* Tiny Compact Footer */}
       <footer className="max-w-[1600px] mx-auto w-full pt-1.5 mt-1 border-t border-slate-900/40 flex justify-between items-center text-[9px] text-slate-700 font-mono tracking-wider shrink-0">
         <span>ROC BOX MULTI-QUERY INSTANT SCREEN v2.5</span>
-        <span>游戏内直接锁定盒子</span>
       </footer>
     </div>
   );
