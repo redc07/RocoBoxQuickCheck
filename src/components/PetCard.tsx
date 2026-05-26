@@ -103,6 +103,7 @@ interface PetCardProps {
   isMatched: boolean;
   hasActiveSearch: boolean;
   count: number;
+  totalAllCounts: number;
   onIncrement: (id: string) => void;
   onDecrement: (id: string) => void;
 }
@@ -128,9 +129,12 @@ const petIndices: Record<string, number> = {
   "xingchenchong": 17
 };
 
-export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, count, onIncrement, onDecrement }: PetCardProps) {
+export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, count, totalAllCounts, onIncrement, onDecrement }: PetCardProps) {
   const IconComponent = iconMap[pet.petIcon] || HelpCircle;
   const attrAvatar = attributeAvatarMap[pet.id];
+
+  // Calculate percentage of total count
+  const percentageOfTotal = totalAllCounts > 0 ? ((count / totalAllCounts) * 100).toFixed(1) : "0.0";
 
   // Highlight matches inside clue text
   const renderHighlightedText = (text: string, query: string) => {
@@ -286,7 +290,14 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
 
         {/* Dynamic Intuitive Counter Buttons */}
         <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto pt-1.5 sm:pt-2 w-full border-t border-stone-950/10 shrink-0 select-none">
-          <span className="text-[10px] sm:text-[11px] text-stone-500/90 font-black font-sans">计数:</span>
+          <div className="flex flex-col items-start justify-center leading-none">
+            <span className="text-[10px] sm:text-[11px] text-stone-500/90 font-black font-sans">计数:</span>
+            {count > 0 && totalAllCounts > 0 && (
+              <span className="text-[9px] text-amber-800 font-bold font-sans mt-0.5" title={`${pet.name}占总计数的比例`}>
+                占比 {percentageOfTotal}%
+              </span>
+            )}
+          </div>
           
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button 

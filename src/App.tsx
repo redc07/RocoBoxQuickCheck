@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useEffect } from "react";
-import { Search, X, HelpCircle, Gamepad2, Compass, Ban, Trash2 } from "lucide-react";
+import { Search, X, HelpCircle, Gamepad2, Compass, Ban, Trash2, Github } from "lucide-react";
 import { PETS_DATABASE } from "./data/pets";
 import PetCard from "./components/PetCard";
 
@@ -109,6 +109,24 @@ export default function App() {
     setPetCounts({});
   };
 
+  // Calculate total counts and percentages for progress tracking
+  const totalCountSum = useMemo(() => {
+    return Object.values(petCounts).reduce((acc: number, val: number) => acc + val, 0);
+  }, [petCounts]);
+
+  const validPets = useMemo(() => {
+    return PETS_DATABASE.filter(p => p.id !== "other");
+  }, []);
+
+  const countedTypesCount = useMemo(() => {
+    return validPets.filter(p => (petCounts[p.id] || 0) > 0).length;
+  }, [validPets, petCounts]);
+
+  const progressPercentage = useMemo(() => {
+    if (validPets.length === 0) return 0;
+    return parseFloat(((countedTypesCount / validPets.length) * 100).toFixed(1));
+  }, [countedTypesCount, validPets]);
+
   return (
     <div className="min-h-screen bg-[#ebdcc5] text-[#3c362d] font-sans selection:bg-amber-500/30 selection:text-amber-950 p-2 sm:p-4 flex flex-col gap-3">
       
@@ -133,10 +151,27 @@ export default function App() {
               <span>清空所有计数</span>
             </button>
 
-            <div className="text-[10px] sm:text-xs text-stone-600 bg-white/60 border border-stone-300/80 px-2.5 py-1 rounded flex items-center gap-1.5 font-bold shadow-xs">
+            <a
+              href="https://space.bilibili.com/1574149783"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] sm:text-xs text-stone-700 bg-white/60 hover:bg-white/95 border border-stone-300/80 hover:border-amber-600/40 px-2.5 py-1 rounded flex items-center gap-1.5 font-bold shadow-xs transition-all cursor-pointer"
+              title="访问 B站 Tiki西米路 主页"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shadow-xs" />
               <span>B站：Tiki西米路</span>
-            </div>
+            </a>
+
+            <a
+              href="https://github.com/redc07/RocoBoxQuickCheck"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] sm:text-xs text-stone-700 bg-white/60 hover:bg-white/95 border border-stone-300/80 hover:border-amber-600/40 px-2.5 py-1 rounded flex items-center gap-1.5 font-bold shadow-xs transition-all cursor-pointer"
+              title="查看 Github 仓库"
+            >
+              <Github size={12} className="text-stone-700" />
+              <span>GitHub</span>
+            </a>
           </div>
         </header>
 
@@ -195,6 +230,7 @@ export default function App() {
               isMatched={isMatched}
               hasActiveSearch={hasActiveSearch}
               count={petCounts[pet.id] || 0}
+              totalAllCounts={totalCountSum}
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
             />
@@ -203,8 +239,23 @@ export default function App() {
       </div>
 
       {/* Tiny Compact Footer */}
-      <footer className="max-w-[1600px] mx-auto w-full pt-2.5 mt-auto border-t border-stone-300 flex justify-between items-center text-[10px] text-stone-500 font-mono tracking-wider shrink-0 select-none">
+      <footer className="max-w-[1600px] mx-auto w-full pt-2.5 mt-auto border-t border-stone-300 flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] md:text-xs text-stone-500 font-mono tracking-wider shrink-0 select-none">
         <span>ROC BOX MULTI-QUERY INSTANT SCREEN v2.6</span>
+        
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 bg-white/50 px-3 py-1.5 rounded-md border border-stone-300/80 shadow-xs font-sans font-bold text-stone-700">
+          <div className="flex items-center gap-1">
+            <span>记录种类:</span>
+            <span className="text-stone-900 font-black text-[12px]">{countedTypesCount} / {validPets.length}</span>
+          </div>
+          <div className="flex items-center gap-1 border-l border-stone-300 pl-2.5">
+            <span>收集进度:</span>
+            <span className="text-amber-800 font-black text-[12px]">{progressPercentage}%</span>
+          </div>
+          <div className="flex items-center gap-1 border-l border-stone-300 pl-2.5">
+            <span>总计数:</span>
+            <span className="text-stone-900 font-black text-[12px]">{totalCountSum}</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
