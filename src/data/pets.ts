@@ -272,36 +272,6 @@ export const PETS_DATABASE: PetBoxData[] = [
     attributes: "冰"
   },
   {
-    id: "guodong",
-    name: "果冻",
-    pinyinName: "guodong",
-    pinyinInitials: "gd",
-    hint: "盒子里传来果冻般粘腻的、滑滑的声音，正在跟随盒子有节奏地摇动",
-    hintInitials: "hzlclgdbndhhdsyzzgshzyjzdyd",
-    keywords: ["果冻", "粘腻", "滑滑的声音", "摇动", "滑滑"],
-    keywordInitials: ["gd", "nn", "hhdsy", "yd", "hh"],
-    themeColor: "from-yellow-600 to-orange-950 border-yellow-500/30",
-    badgeColor: "bg-yellow-500/10 text-yellow-200 border-yellow-500/20",
-    petIcon: "Dribbble",
-    description: "晶莹剔透的水系胶状萌物，身体极度滑润软弹，哪怕微弱的晃动，它都在里面随着节拍摇摇晃晃。",
-    attributes: "水"
-  },
-  {
-    id: "xingchenchong",
-    name: "星尘虫",
-    pinyinName: "xingchenchong",
-    pinyinInitials: "scc",
-    hint: "盒子里传来窸窸窣窣的爬行声，伴随一丝星芒从缝隙里掠过",
-    hintInitials: "hzlclxxssdpxsbsysxmcfxllg",
-    keywords: ["窸窸窣窣", "爬行声", "星芒", "掠过", "缝隙"],
-    keywordInitials: ["xxss", "pxs", "xm", "lg", "fx"],
-    themeColor: "from-violet-800 to-indigo-950 border-violet-500/30",
-    badgeColor: "bg-violet-500/10 text-violet-200 border-violet-500/20",
-    petIcon: "Moon",
-    description: "披着夜空轻纱的幼小微光之虫，爬行时会摩擦出微弱荧光，从隙缝看去犹如流星掠过。",
-    attributes: "虫"
-  },
-  {
     id: "rongrong",
     name: "绒绒",
     pinyinName: "rongrong",
@@ -345,6 +315,36 @@ export const PETS_DATABASE: PetBoxData[] = [
     petIcon: "Flame",
     description: "奔跑如飞的热血马驹，身上的鬃毛在高速移动中会化作绚丽火焰，沿途留下一长串璀璨星火。",
     attributes: "火"
+  },
+  {
+    id: "guodong",
+    name: "果冻（无异色）",
+    pinyinName: "guodong",
+    pinyinInitials: "gd",
+    hint: "盒子里传来果冻般粘腻的、滑滑的声音，正在跟随盒子有节奏地摇动",
+    hintInitials: "hzlclgdbndhhdsyzzgshzyjzdyd",
+    keywords: ["果冻", "粘腻", "滑滑的声音", "摇动", "滑滑"],
+    keywordInitials: ["gd", "nn", "hhdsy", "yd", "hh"],
+    themeColor: "from-yellow-600 to-orange-950 border-yellow-500/30",
+    badgeColor: "bg-yellow-500/10 text-yellow-200 border-yellow-500/20",
+    petIcon: "Dribbble",
+    description: "晶莹剔透的水系胶状萌物，身体极度滑润软弹，哪怕微弱的晃动，它都在里面随着节拍摇摇晃晃。",
+    attributes: "水"
+  },
+  {
+    id: "xingchenchong",
+    name: "星尘虫（无异色）",
+    pinyinName: "xingchenchong",
+    pinyinInitials: "scc",
+    hint: "盒子里传来窸窸窣窣的爬行声，伴随一丝星芒从缝隙里掠过",
+    hintInitials: "hzlclxxssdpxsbsysxmcfxllg",
+    keywords: ["窸窸窣窣", "爬行声", "星芒", "掠过", "缝隙"],
+    keywordInitials: ["xxss", "pxs", "xm", "lg", "fx"],
+    themeColor: "from-violet-800 to-indigo-950 border-violet-500/30",
+    badgeColor: "bg-violet-500/10 text-violet-200 border-violet-500/20",
+    petIcon: "Moon",
+    description: "披着夜空轻纱的幼小微光之虫，爬行时会摩擦出微弱荧光，从隙缝看去犹如流星掠过。",
+    attributes: "虫"
   },
   {
     id: "other",

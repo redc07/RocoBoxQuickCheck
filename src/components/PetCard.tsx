@@ -209,14 +209,14 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
       id={`pet-card-${pet.id}`} 
       onClick={() => onIncrement(pet.id)}
       style={{ backgroundColor: "#f2eadd" }}
-      className={`relative rounded-lg p-3.5 flex flex-col justify-start gap-3.5 text-left transition-all duration-200 h-full cursor-pointer hover:scale-[1.01] active:scale-[0.98] select-none ${cardOpacity} ${borderStyle}`}
+      className={`relative rounded-lg p-2.5 min-[360px]:p-3 sm:p-3.5 flex flex-col justify-start gap-2.5 sm:gap-3.5 text-left transition-all duration-200 h-full cursor-pointer hover:scale-[1.01] active:scale-[0.98] select-none ${cardOpacity} ${borderStyle}`}
     >
       {/* Top Part: Avatar on Left, Name/Attributes/Status on Right */}
-      <div className="flex items-center gap-3 w-full shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 w-full shrink-0">
         {/* Sprite or Custom Avatar */}
         {petImageMap[pet.id] ? (
           <div 
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-md border border-stone-300 bg-white overflow-hidden shrink-0 shadow-sm select-none pointer-events-none flex items-center justify-center p-0"
+            className="w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-md border border-stone-300 bg-white overflow-hidden shrink-0 shadow-sm select-none pointer-events-none flex items-center justify-center p-0"
           >
             <img 
               src={petImageMap[pet.id]} 
@@ -227,16 +227,18 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
           </div>
         ) : attrAvatar ? (
           <div 
-            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-md border ${attrAvatar.borderClass} ${attrAvatar.bgClass} overflow-hidden shrink-0 ${attrAvatar.glowClass} select-none pointer-events-none flex flex-col items-center justify-center relative p-1`}
+            style={{ backgroundColor: "#f2eadd" }}
+            className={`w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-md border ${attrAvatar.borderClass} overflow-hidden shrink-0 ${attrAvatar.glowClass} select-none pointer-events-none flex flex-col items-center justify-center relative p-1`}
           >
-            <attrAvatar.icon className={`w-7 h-7 sm:w-8 sm:h-8 stroke-[1.5] ${attrAvatar.colorClass}`} />
-            <span className="text-[9px] font-sans font-black text-stone-800 absolute bottom-0.5 leading-none bg-stone-150/90 border border-stone-250 px-1 py-0.5 rounded-sm scale-90">
+            <attrAvatar.icon className={`w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 stroke-[1.5] ${attrAvatar.colorClass}`} />
+            <span className="text-[8px] sm:text-[9px] font-sans font-black text-stone-800 absolute bottom-0.5 leading-none bg-stone-150/90 border border-stone-250 px-1 py-0.5 rounded-sm scale-90">
               {attrAvatar.text}
             </span>
           </div>
         ) : (
           <div 
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-md border border-stone-300 bg-stone-50 overflow-hidden shrink-0 shadow-md select-none pointer-events-none flex items-center justify-center text-stone-600 bg-stone-100"
+            style={{ backgroundColor: "#f2eadd" }}
+            className="w-10 h-10 min-[360px]:w-12 min-[360px]:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-md border border-stone-300 overflow-hidden shrink-0 shadow-sm select-none pointer-events-none flex items-center justify-center text-stone-600"
           >
             {idx !== undefined ? (
               <div 
@@ -249,26 +251,26 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
                 }}
               />
             ) : (
-              <IconComponent className="w-8 h-8 stroke-[1.5] text-amber-600 animate-pulse" />
+              <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 stroke-[1.5] text-amber-600 animate-pulse" />
             )}
           </div>
         )}
 
         {/* Right column of top row: Name & Attribute info */}
-        <div className="flex flex-col items-start gap-1 justify-center min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 flex-wrap w-full">
-            <h3 className={`text-[18px] sm:text-[21px] font-black font-sans text-stone-950 leading-tight truncate ${hasActiveSearch && isMatched ? "text-amber-950" : ""}`}>
+        <div className="flex flex-col items-start gap-0.5 sm:gap-1 justify-center min-w-0 flex-1">
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap w-full">
+            <h3 className={`text-sm min-[360px]:text-base sm:text-lg md:text-xl font-black font-sans text-stone-950 leading-tight truncate ${hasActiveSearch && isMatched ? "text-amber-950" : ""}`} title={pet.name}>
               {pet.name}
             </h3>
             {getElementType() && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-950/10 text-stone-900 border border-stone-950/15 font-black shrink-0">
+              <span className="text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded bg-stone-950/10 text-stone-900 border border-stone-950/15 font-black shrink-0">
                 {getElementType()}
               </span>
             )}
           </div>
           
           {hasActiveSearch && isMatched && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-900 border border-amber-500/25 font-extrabold select-none animate-pulse">
+            <span className="text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-900 border border-amber-500/25 font-extrabold select-none animate-pulse">
               已对齐
             </span>
           )}
@@ -276,31 +278,31 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
       </div>
 
       {/* Main Info Columns */}
-      <div className="flex-1 w-full min-h-0 flex flex-col justify-between gap-3">
+      <div className="flex-1 w-full min-h-0 flex flex-col justify-between gap-2.5 sm:gap-3">
         {/* Highlighted hint without prefix text (increased size by 50%) */}
-        <p className="text-[15px] sm:text-[16.5px] xl:text-[17.5px] text-stone-900 leading-snug select-all font-bold text-left">
+        <p className="text-[13px] min-[360px]:text-[14.5px] sm:text-[15.5px] xl:text-[16.8px] text-stone-900 leading-snug select-all font-bold text-left">
           {renderHighlightedText(pet.hint, searchQuery)}
         </p>
 
         {/* Dynamic Intuitive Counter Buttons */}
-        <div className="flex items-center justify-between gap-2 mt-auto pt-2 w-full border-t border-stone-950/10 shrink-0 select-none">
-          <span className="text-[11px] text-stone-500/90 font-black font-sans">计数:</span>
+        <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto pt-1.5 sm:pt-2 w-full border-t border-stone-950/10 shrink-0 select-none">
+          <span className="text-[10px] sm:text-[11px] text-stone-500/90 font-black font-sans">计数:</span>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button 
               type="button"
               onClick={(e) => {
                 e.stopPropagation(); // Avoid duplicate/double triggers
                 onDecrement(pet.id);
               }}
-              className="w-5 h-5 flex items-center justify-center rounded bg-white hover:bg-stone-100 active:bg-stone-200 text-xs text-stone-800 font-extrabold transition-all border border-stone-300 active:scale-90 shadow-xs"
+              className="w-4.5 h-4.5 sm:w-5 sm:h-5 flex items-center justify-center rounded bg-white hover:bg-stone-100 active:bg-stone-200 text-[10px] sm:text-xs text-stone-800 font-extrabold transition-all border border-stone-300 active:scale-90 shadow-xs shrink-0"
               title="手动减少计数"
             >
               -
             </button>
             
             <span 
-              className={`text-[10px] md:text-[11px] font-black font-mono px-2 py-0.5 rounded transition-all min-w-[18px] text-center ${
+              className={`text-[9px] sm:text-[10px] md:text-[11px] font-black font-mono px-1.5 sm:px-2 py-0.5 rounded transition-all min-w-[14px] sm:min-w-[18px] text-center shrink-0 ${
                 count > 0 
                   ? "bg-amber-500 text-stone-950 font-black shadow-[0_2px_6px_rgba(245,158,11,0.35)]" 
                   : "bg-stone-200/50 text-stone-500 border border-stone-300/60"
@@ -315,7 +317,7 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
                 e.stopPropagation(); // Avoid duplicate/double triggers
                 onIncrement(pet.id);
               }}
-              className="w-5 h-5 flex items-center justify-center rounded bg-white hover:bg-stone-100 active:bg-stone-200 text-xs text-stone-800 font-extrabold transition-all border border-stone-300 active:scale-95 shadow-xs"
+              className="w-4.5 h-4.5 sm:w-5 sm:h-5 flex items-center justify-center rounded bg-white hover:bg-stone-100 active:bg-stone-200 text-[10px] sm:text-xs text-stone-800 font-extrabold transition-all border border-stone-300 active:scale-95 shadow-xs shrink-0"
               title="手动增加计数"
             >
               +
