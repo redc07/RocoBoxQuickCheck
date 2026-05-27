@@ -1,6 +1,6 @@
 {
   "name": "洛克王国盒子查询工具",
-  "description": "洛克王国第二赛季随从盒子谜题快速查询辅助工具，支持输入关键词、提示句片段或拼音首字母（如CTL）快速精准匹配精灵。",
+  "description": "洛克王国第二赛季精灵盒子谜题快速查询辅助工具，支持输入关键词、提示句片段或拼音首字母（如CTL）快速精准匹配精灵。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -4,8 +4,9 @@
  */
 
 import { useState, useMemo, useEffect } from "react";
-import { Search, X, HelpCircle, Gamepad2, Compass, Ban, Trash2, Github, FileDown } from "lucide-react";
+import { Search, X, HelpCircle, Gamepad2, Compass, Ban, Trash2, Github, FileDown, AlertTriangle } from "lucide-react";
 import { PETS_DATABASE } from "./data/pets";
+import { checkPinyinMatch } from "./utils/pinyin";
 import PetCard from "./components/PetCard";
 
 interface IncrementLog {
@@ -16,6 +17,7 @@ interface IncrementLog {
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [petCounts, setPetCounts] = useState<Record<string, number>>(() => {
     try {
       const saved = localStorage.getItem("pet_box_counts");
@@ -62,7 +64,7 @@ export default function App() {
       const isHintMatch = pet.hint.toLowerCase().includes(queryClean);
       
       // 3. Name pinyin matches
-      const isPinyinMatch = pet.pinyinName.toLowerCase().includes(queryClean);
+      const isPinyinMatch = checkPinyinMatch(pet.pinyinName, pet.pinyinInitials, queryClean);
       
       // 4. Name initials matches
       const isPinyinInitialsMatch = pet.pinyinInitials.toLowerCase().includes(queryClean);
@@ -112,7 +114,7 @@ export default function App() {
 
   const handleIncrement = (id: string) => {
     const pet = PETS_DATABASE.find(p => p.id === id);
-    const petName = pet ? pet.name : (id === "other" ? "其他随从" : id);
+    const petName = pet ? pet.name : (id === "other" ? "其他精灵" : id);
 
     setPetCounts(prev => ({
       ...prev,
@@ -149,8 +151,13 @@ export default function App() {
   };
 
   const handleClearAllCounts = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearAllCounts = () => {
     setPetCounts({});
     setIncrementLogs([]);
+    setShowClearConfirm(false);
   };
 
   // Calculate total counts for progress tracking
@@ -167,7 +174,7 @@ export default function App() {
       const count = countVal as number;
       if (count > 0) {
         const pet = PETS_DATABASE.find(p => p.id === id);
-        const name = pet ? pet.name : (id === "other" ? "其他随从" : id);
+        const name = pet ? pet.name : (id === "other" ? "其他精灵" : id);
         summary[id] = {
           id,
           name,
@@ -247,7 +254,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
   <table>
     <!-- Sheet Title Info Block -->
     <tr>
-      <td colspan="3" class="title-header">洛克王国 · 随从秘语极速抓取多开统计报表</td>
+      <td colspan="3" class="title-header">洛克王国世界S2·盒子查询记录工具-数据导出</td>
     </tr>
     <tr>
       <td colspan="3" class="info-meta">导出时间: ${new Date().toLocaleString()} &nbsp;|&nbsp; 累计抓获总数: ${totalCount} 只</td>
@@ -256,7 +263,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
 
     <!-- Summary Stats Table Partition -->
     <tr>
-      <td colspan="3" class="section-title">📊 随从种类产出实时占比统计 (爆率一览)</td>
+      <td colspan="3" class="section-title">📊 精灵种类产出实时占比统计 (爆率一览)</td>
     </tr>
     <tr>
       <th style="width: 250px;">出货精灵种类</th>
@@ -316,7 +323,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
     const now = new Date();
     const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
     link.setAttribute("href", url);
-    link.setAttribute("download", `洛克随从极速抓取占比报表_${dateStr}.xls`);
+    link.setAttribute("download", `洛克王国世界S2·盒子查询记录工具-数据导出_${dateStr}.xls`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -332,7 +339,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-amber-800 shrink-0 animate-pulse" size={17} />
             <h1 className="text-sm min-[360px]:text-base md:text-lg font-black tracking-tight text-stone-900 flex items-center gap-1.5">
-              <span>洛克王国 · 盒子提示词极速查询与计数</span>
+              <span>洛克王国世界S2·盒子查询记录工具</span>
             </h1>
           </div>
 
@@ -341,7 +348,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
             <button
               onClick={handleClearAllCounts}
               className="text-[10px] sm:text-xs bg-rose-500/10 text-rose-800 border border-rose-500/25 hover:bg-rose-500/20 active:bg-rose-500/35 px-2.5 py-1 rounded flex items-center gap-1 font-extrabold transition-all shadow-xs cursor-pointer"
-              title="清空所有随从的计数"
+              title="清空所有精灵的计数"
             >
               <Trash2 size={12} />
               <span>清空所有计数</span>
@@ -402,7 +409,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
             <div className="text-[10px] sm:text-xs bg-amber-500/15 text-amber-950 border border-amber-500/25 px-3 py-2 rounded-lg flex items-center gap-1.5 shrink-0 justify-center font-bold shadow-xs">
               <Compass size={12} className="animate-spin duration-3000 text-amber-700" />
               <span>
-                高亮并置顶 <strong className="font-extrabold text-amber-900">{matchesCount}</strong> 款匹配随从
+                高亮并置顶 <strong className="font-extrabold text-amber-900">{matchesCount}</strong> 款匹配精灵
               </span>
             </div>
           )}
@@ -412,7 +419,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
         {hasActiveSearch && matchesCount === 0 && (
           <div className="w-full text-center py-6 bg-white/40 border border-dashed border-stone-300 rounded-lg max-w-xs mx-auto space-y-1.5 shrink-0 my-4 shadow-sm">
             <Ban size={18} className="text-stone-400 mx-auto" />
-            <p className="text-xs text-stone-600 font-bold font-sans">无匹配随从，请检查首字母或密语</p>
+            <p className="text-xs text-stone-600 font-bold font-sans">无匹配精灵，请检查首字母或密语</p>
           </div>
         )}
 
@@ -441,7 +448,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
             <div className="flex items-center gap-2">
               <span className="text-xs sm:text-sm font-black text-stone-900 flex items-center gap-1">
                 <span>📊</span>
-                <span>随从产出实时占比看板</span>
+                <span>精灵产出实时占比看板</span>
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-900/10 text-amber-950 font-bold">
                 共 {incrementLogs.length} 次记录
@@ -461,7 +468,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
 
           <div className="mt-2.5 space-y-2">
             <div className="text-[11px] font-black text-amber-900/70 mb-1 flex items-center gap-1">
-              <span>📈 各种类随从爆率统计（实时排序一览）：</span>
+              <span>📈 各种类精灵爆率统计（实时排序一览）：</span>
             </div>
             <div className="grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2">
               {petStatistics.map((stat) => {
@@ -495,7 +502,7 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
 
       {/* Tiny Compact Footer */}
       <footer className="max-w-[1600px] mx-auto w-full pt-2.5 mt-auto border-t border-stone-300 flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] md:text-xs text-stone-500 font-mono tracking-wider shrink-0 select-none">
-        <span>ROC BOX MULTI-QUERY INSTANT SCREEN v2.6</span>
+        <span>Roco Box v1.0</span>
         
         <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 bg-white/50 px-3 py-1.5 rounded-md border border-stone-300/80 shadow-xs font-sans font-bold text-stone-700">
           <div className="flex items-center gap-1">
@@ -504,6 +511,41 @@ const PET_COLOR_MAP: Record<string, { bg: string; text: string; border: string; 
           </div>
         </div>
       </footer>
+
+      {/* Modern, beautiful custom clear counts confirmation modal overlay */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-[#3c362d]/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-[#fcfaf7] border border-stone-350 w-full max-w-sm rounded-[14px] p-5 shadow-2xl animate-in fade-in duration-200">
+            <div className="flex items-start gap-3">
+              <div className="bg-rose-100 text-rose-800 p-2.5 rounded-full shrink-0">
+                <AlertTriangle size={20} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-black text-stone-950 font-sans">确认清空所有计数？</h3>
+                <p className="text-xs text-stone-600 font-bold leading-relaxed font-sans">
+                  此操作将清空当前所有记录。统计占比以及抓车明细均会被重置。
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2.5 mt-5">
+              <button
+                type="button"
+                onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-1.5 text-xs text-stone-600 font-bold bg-[#faf8f4] hover:bg-stone-100 border border-stone-300 rounded-md transition-all cursor-pointer"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={confirmClearAllCounts}
+                className="px-4 py-1.5 text-xs text-white font-black bg-rose-600 hover:bg-rose-700 active:bg-rose-800 rounded-md shadow-xs transition-all cursor-pointer"
+              >
+                确定
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

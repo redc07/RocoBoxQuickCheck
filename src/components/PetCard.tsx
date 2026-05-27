@@ -1,9 +1,11 @@
+import React from "react";
 import { 
   Music, Sparkles, Waves, Disc, HelpCircle, Smile, Drum, Cpu, Scale, 
   Flame, ShieldCheck, Soup, Flower2, TreePine, Cat, Ghost, Dribbble, 
   Moon, Info, Heart, Bird, Bug, Sun
 } from "lucide-react";
 import { PetBoxData } from "../types";
+import { checkPinyinMatch } from "../utils/pinyin";
 
 // Import custom pet JPG assets uploaded by the user
 import yindiehouImg from "../assets/images/猴麦仔.jpg";
@@ -136,63 +138,335 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
   // Calculate percentage of total count
   const percentageOfTotal = totalAllCounts > 0 ? ((count / totalAllCounts) * 100).toFixed(1) : "0.0";
 
+  // Helper to build 1:1 mapping from positions in pet.hintInitials/pinyinInitials to original text indexes
+  const buildAlignment = (text: string, initials: string) => {
+    const mapping: number[] = [];
+    let initialsIdx = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const isPunctuation = /[\s，。！？、；：（）「」【】“”"'.:;!?,\-_()]/u.test(char);
+      if (!isPunctuation) {
+        if (initialsIdx < initials.length) {
+          mapping.push(i);
+          initialsIdx++;
+        }
+      }
+    }
+    return mapping;
+  };
+
+  // Build character mapping for pet names with pinyin syllables
+  const buildNamePinyinMapping = (name: string, pinyinInitials: string, pinyinName: string) => {
+    const mapping: Array<{ charIndex: number; initial: string; startInPinyin: number; endInPinyin: number }> = [];
+    if (!pinyinInitials || !pinyinName) return [];
+
+    // Filter characters in the name to match character by character with initials
+    // Skip parentheses elements (e.g. "(无异色)") to prevent alignment offsets
+    const cleanCharsIndices: number[] = [];
+    for (let i = 0; i < name.length; i++) {
+      const char = name[i];
+      if (char !== "(" && char !== "（" && char !== ")" && char !== "）") {
+        const hasParenSuffix = name.substring(i).startsWith("（无异色）") || name.substring(i).startsWith("(无异色)");
+        if (hasParenSuffix) {
+          const suffixLen = name.substring(i).indexOf("）") === -1 ? 5 : name.substring(i).indexOf("）") + 1;
+          i += suffixLen - 1;
+          continue;
+        }
+        cleanCharsIndices.push(i);
+      }
+    }
+
+    // Partition pinyinName into segments based on initials letters sequence
+    let currentIdxInPinyin = 0;
+    const parts: Array<{ start: number; end: number }> = [];
+
+    for (let i = 0; i < pinyinInitials.length; i++) {
+      const initChar = pinyinInitials[i].toLowerCase();
+      let foundIdx = -1;
+      for (let j = currentIdxInPinyin; j <= pinyinName.length - (pinyinInitials.length - i); j++) {
+        if (pinyinName[j].toLowerCase() === initChar) {
+          foundIdx = j;
+          break;
+        }
+      }
+      if (foundIdx !== -1) {
+        parts.push({ start: foundIdx, end: -1 });
+        if (i > 0) {
+          parts[i - 1].end = foundIdx;
+        }
+        currentIdxInPinyin = foundIdx + 1;
+      } else {
+        parts.push({ start: currentIdxInPinyin, end: currentIdxInPinyin + 1 });
+        currentIdxInPinyin++;
+      }
+    }
+    if (parts.length > 0) {
+      parts[parts.length - 1].end = pinyinName.length;
+    }
+
+    // Map the cleaned indices to partitioned parts
+    for (let i = 0; i < pinyinInitials.length; i++) {
+      const charIdx = cleanCharsIndices[i];
+      if (charIdx !== undefined && parts[i]) {
+        mapping.push({
+          charIndex: charIdx,
+          initial: pinyinInitials[i],
+          startInPinyin: parts[i].start,
+          endInPinyin: parts[i].end
+        });
+      }
+    }
+
+    return mapping;
+  };
+
+  // Highlight matches inside name
+  const renderHighlightedName = (name: string, query: string) => {
+    if (!query.trim()) return name;
+    const trimmedQuery = query.trim().toLowerCase();
+
+    const intervals: Array<{ start: number; end: number; isKeyword: boolean }> = [];
+    const nameLower = name.toLowerCase();
+
+    // 1. Literal query direct substring match in name (e.g. "海葵")
+    let pos = 0;
+    while ((pos = nameLower.indexOf(trimmedQuery, pos)) !== -1) {
+      intervals.push({
+        start: pos,
+        end: pos + trimmedQuery.length,
+        isKeyword: false
+      });
+      pos += Math.max(1, trimmedQuery.length);
+    }
+
+    const pinyinMapping = buildNamePinyinMapping(name, pet.pinyinInitials, pet.pinyinName);
+
+    // 2. Initials Match in initials (e.g. "yh" -> maps to "油海" starting at index 1 and 2 in clean values)
+    if (pet.pinyinInitials) {
+      const initialsLower = pet.pinyinInitials.toLowerCase();
+      let initPos = 0;
+      while ((initPos = initialsLower.indexOf(trimmedQuery, initPos)) !== -1) {
+        const startMap = pinyinMapping[initPos];
+        const endMap = pinyinMapping[initPos + trimmedQuery.length - 1];
+        if (startMap && endMap) {
+          intervals.push({
+            start: startMap.charIndex,
+            end: endMap.charIndex + 1,
+            isKeyword: false
+          });
+        }
+        initPos += Math.max(1, trimmedQuery.length);
+      }
+    }
+
+    // 3. Pinyin Name Substring Match (e.g., "haikui" -> maps clean character ranges)
+    if (pet.pinyinName && /^[a-z]+$/i.test(trimmedQuery) && checkPinyinMatch(pet.pinyinName, pet.pinyinInitials, trimmedQuery)) {
+      const pinyinLower = pet.pinyinName.toLowerCase();
+      let pinPos = 0;
+      while ((pinPos = pinyinLower.indexOf(trimmedQuery, pinPos)) !== -1) {
+        const queryEnd = pinPos + trimmedQuery.length;
+        let firstMatchedCharIdx: number | null = null;
+        let lastMatchedCharIdx: number | null = null;
+
+        pinyinMapping.forEach(item => {
+          const overlap = Math.max(0, Math.min(item.endInPinyin, queryEnd) - Math.max(item.startInPinyin, pinPos));
+          if (overlap > 0) {
+            if (firstMatchedCharIdx === null || item.charIndex < firstMatchedCharIdx) {
+              firstMatchedCharIdx = item.charIndex;
+            }
+            if (lastMatchedCharIdx === null || item.charIndex > lastMatchedCharIdx) {
+              lastMatchedCharIdx = item.charIndex;
+            }
+          }
+        });
+
+        if (firstMatchedCharIdx !== null && lastMatchedCharIdx !== null) {
+          intervals.push({
+            start: firstMatchedCharIdx,
+            end: lastMatchedCharIdx + 1,
+            isKeyword: false
+          });
+        }
+        pinPos += Math.max(1, trimmedQuery.length);
+      }
+    }
+
+    if (intervals.length === 0) return name;
+
+    // Sort and Merge intervals
+    const sortedIntervals = [...intervals].sort((a, b) => {
+      if (a.start !== b.start) return a.start - b.start;
+      return b.end - a.end;
+    });
+
+    const mergedIntervals: Array<{ start: number; end: number; isKeyword: boolean }> = [];
+    sortedIntervals.forEach(interval => {
+      if (mergedIntervals.length === 0) {
+        mergedIntervals.push(interval);
+      } else {
+        const last = mergedIntervals[mergedIntervals.length - 1];
+        if (interval.start < last.end) {
+          last.end = Math.max(last.end, interval.end);
+          last.isKeyword = last.isKeyword && interval.isKeyword;
+        } else {
+          mergedIntervals.push(interval);
+        }
+      }
+    });
+
+    // Render marked segments
+    const renderedNodes: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    mergedIntervals.forEach((interval, idx) => {
+      if (interval.start > lastIndex) {
+        renderedNodes.push(name.substring(lastIndex, interval.start));
+      }
+      const matchedText = name.substring(interval.start, interval.end);
+      renderedNodes.push(
+        <mark key={idx} className="bg-amber-300 text-stone-950 px-1 py-0.5 rounded font-black shadow-xs hover:bg-amber-400 transition-colors duration-150">
+          {matchedText}
+        </mark>
+      );
+      lastIndex = interval.end;
+    });
+
+    if (lastIndex < name.length) {
+      renderedNodes.push(name.substring(lastIndex));
+    }
+
+    return <span>{renderedNodes}</span>;
+  };
+
   // Highlight matches inside clue text
   const renderHighlightedText = (text: string, query: string) => {
     if (!query.trim()) return text;
     const trimmedQuery = query.trim().toLowerCase();
-    
-    // 1. Try exact match standard text
-    const index = text.toLowerCase().indexOf(trimmedQuery);
-    if (index >= 0) {
-      const before = text.substring(0, index);
-      const matched = text.substring(index, index + trimmedQuery.length);
-      const after = text.substring(index + trimmedQuery.length);
-      return (
-        <span>
-          {before}
-          <mark className="bg-amber-300 text-stone-950 px-1 py-0.5 rounded font-black shadow-sm">
-            {matched}
-          </mark>
-          {after}
-        </span>
+
+    // List of intervals in the text to highlight
+    const intervals: Array<{ start: number; end: number; isKeyword: boolean }> = [];
+    const textLower = text.toLowerCase();
+
+    // 1. Literal query direct substring match
+    let pos = 0;
+    while ((pos = textLower.indexOf(trimmedQuery, pos)) !== -1) {
+      intervals.push({
+        start: pos,
+        end: pos + trimmedQuery.length,
+        isKeyword: false
+      });
+      pos += Math.max(1, trimmedQuery.length);
+    }
+
+    // 2. Keyword exact/pinyin initial match
+    pet.keywords.forEach((keyword, i) => {
+      const initial = pet.keywordInitials[i];
+      const isKeywordContentMatch = keyword.toLowerCase().includes(trimmedQuery);
+      const isInitialMatch = initial && (initial.toLowerCase() === trimmedQuery || initial.toLowerCase().startsWith(trimmedQuery));
+
+      if (isKeywordContentMatch || isInitialMatch) {
+        let matchStartInKeyword = 0;
+        let matchLength = keyword.length;
+
+        if (isKeywordContentMatch) {
+          matchStartInKeyword = keyword.toLowerCase().indexOf(trimmedQuery);
+          matchLength = trimmedQuery.length;
+        } else if (isInitialMatch) {
+          matchStartInKeyword = 0;
+          matchLength = trimmedQuery.length;
+        }
+
+        const kwLower = keyword.toLowerCase();
+        let kwPos = 0;
+        while ((kwPos = textLower.indexOf(kwLower, kwPos)) !== -1) {
+          intervals.push({
+            start: kwPos + matchStartInKeyword,
+            end: kwPos + matchStartInKeyword + matchLength,
+            isKeyword: true
+          });
+          kwPos += Math.max(1, keyword.length);
+        }
+      }
+    });
+
+    // 3. Initials substring match (e.g. "ppd" matching "砰砰的" and "噼啪的" via hintInitials)
+    if (pet.hintInitials) {
+      const initialsLower = pet.hintInitials.toLowerCase();
+      let initPos = 0;
+      const alignmentMapping = buildAlignment(text, pet.hintInitials);
+
+      while ((initPos = initialsLower.indexOf(trimmedQuery, initPos)) !== -1) {
+        const startTextIdx = alignmentMapping[initPos];
+        const endTextIdx = alignmentMapping[initPos + trimmedQuery.length - 1];
+
+        if (startTextIdx !== undefined && endTextIdx !== undefined) {
+          intervals.push({
+            start: startTextIdx,
+            end: endTextIdx + 1,
+            isKeyword: false
+          });
+        }
+        initPos += Math.max(1, trimmedQuery.length);
+      }
+    }
+
+    if (intervals.length === 0) return text;
+
+    // Sort intervals by start index ascending, then by length descending (end index descending)
+    const sortedIntervals = [...intervals].sort((a, b) => {
+      if (a.start !== b.start) {
+        return a.start - b.start;
+      }
+      return b.end - a.end;
+    });
+
+    // Merge overlapping/nested intervals
+    const mergedIntervals: Array<{ start: number; end: number; isKeyword: boolean }> = [];
+    sortedIntervals.forEach(interval => {
+      if (mergedIntervals.length === 0) {
+        mergedIntervals.push(interval);
+      } else {
+        const last = mergedIntervals[mergedIntervals.length - 1];
+        if (interval.start < last.end) {
+          // Overlap! Merge by taking the max end index
+          last.end = Math.max(last.end, interval.end);
+          // If either was a direct query match (isKeyword = false), make the merged interval direct (amber)
+          last.isKeyword = last.isKeyword && interval.isKeyword;
+        } else {
+          mergedIntervals.push(interval);
+        }
+      }
+    });
+
+    // Slice text and map to React nodes
+    const renderedNodes: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    mergedIntervals.forEach((interval, idx) => {
+      // Unmatched leading part
+      if (interval.start > lastIndex) {
+        renderedNodes.push(text.substring(lastIndex, interval.start));
+      }
+      // Highlighted part
+      const matchedText = text.substring(interval.start, interval.end);
+      const className = interval.isKeyword
+        ? "bg-emerald-200 text-emerald-950 px-1 py-0.5 rounded font-black shadow-xs hover:bg-emerald-300 transition-colors duration-150"
+        : "bg-amber-300 text-stone-950 px-1 py-0.5 rounded font-black shadow-xs hover:bg-amber-400 transition-colors duration-150";
+
+      renderedNodes.push(
+        <mark key={idx} className={className}>
+          {matchedText}
+        </mark>
       );
+      lastIndex = interval.end;
+    });
+
+    // Remainder of text
+    if (lastIndex < text.length) {
+      renderedNodes.push(text.substring(lastIndex));
     }
 
-    // 2. Try match keyword fallback inside the string to highlight the correct Chinese term
-    let matchedKeyword = "";
-    for (const keyword of pet.keywords) {
-      if (keyword.toLowerCase().includes(trimmedQuery)) {
-        matchedKeyword = keyword;
-        break;
-      }
-    }
-
-    for (let i = 0; i < pet.keywordInitials.length; i++) {
-      if (pet.keywordInitials[i] === trimmedQuery) {
-        matchedKeyword = pet.keywords[i];
-        break;
-      }
-    }
-
-    if (matchedKeyword) {
-      const kwIndex = text.indexOf(matchedKeyword);
-      if (kwIndex >= 0) {
-        const before = text.substring(0, kwIndex);
-        const matched = text.substring(kwIndex, kwIndex + matchedKeyword.length);
-        const after = text.substring(kwIndex + matchedKeyword.length);
-        return (
-          <span>
-            {before}
-            <mark className="bg-emerald-200 text-emerald-950 px-1 py-0.5 rounded font-black whitespace-nowrap shadow-sm">
-              {matched}
-            </mark>
-            {after}
-          </span>
-        );
-      }
-    }
-
-    return text;
+    return <span>{renderedNodes}</span>;
   };
 
   // Get elemental type label
@@ -264,7 +538,7 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
         <div className="flex flex-col items-start gap-0.5 sm:gap-1 justify-center min-w-0 flex-1">
           <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap w-full">
             <h3 className={`text-sm min-[360px]:text-base sm:text-lg md:text-xl font-black font-sans text-stone-950 leading-tight truncate ${hasActiveSearch && isMatched ? "text-amber-950" : ""}`} title={pet.name}>
-              {pet.name}
+              {renderHighlightedName(pet.name, searchQuery)}
             </h3>
             {getElementType() && (
               <span className="text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded bg-stone-950/10 text-stone-900 border border-stone-950/15 font-black shrink-0">
