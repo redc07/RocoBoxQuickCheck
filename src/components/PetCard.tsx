@@ -546,6 +546,26 @@ export default function PetCard({ pet, searchQuery, isMatched, hasActiveSearch, 
               </span>
             )}
           </div>
+
+          {pet.eggGroups && pet.eggGroups.length > 0 && (
+            <div className="flex items-center gap-1 flex-wrap mt-0.5">
+              {pet.eggGroups.map((group, gIdx) => {
+                const isEggMatch = searchQuery.trim() && group.toLowerCase().includes(searchQuery.trim().toLowerCase());
+                return (
+                  <span 
+                    key={gIdx} 
+                    className={`text-[8px] sm:text-[9.5px] px-1 sm:px-1.5 py-0.5 rounded font-black shrink-0 transition-colors duration-150 ${
+                      isEggMatch 
+                        ? "bg-amber-300 text-stone-950 border border-amber-405 shadow-xs" 
+                        : "bg-amber-900/10 text-amber-950 border border-amber-900/15"
+                    }`}
+                  >
+                    {group}
+                  </span>
+                );
+              })}
+            </div>
+          )}
           
           {hasActiveSearch && isMatched && (
             <span className="text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-900 border border-amber-500/25 font-extrabold select-none animate-pulse">

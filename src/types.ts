@@ -10,6 +10,6 @@ export interface PetBoxData {
   themeColor: string; // Theme color class for backgrounds (e.g. "from-purple-500 to-indigo-600")
   badgeColor: string; // Color of the text bubble badge
   petIcon: string; // A Lucide icon key or name
-  description: string; // Short stylized description of what kind of pet it is
+  eggGroups?: string[]; // Egg groups, e.g., ["动物组", "机械组"]
   attributes: string; // Elemental attributes, e.g., "普通/机械"
 }

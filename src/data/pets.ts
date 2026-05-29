@@ -13,7 +13,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-indigo-600 to-indigo-900 border-indigo-400/30",
     badgeColor: "bg-indigo-500/10 text-indigo-200 border-indigo-500/20",
     petIcon: "Music",
-    description: "天生的歌唱家，擅长发射出穿透力极强的超声波，音量堪比重型低音炮！",
+    eggGroups: ["动物组", "机械组"],
     attributes: "普通/机械"
   },
   {
@@ -21,14 +21,14 @@ export const PETS_DATABASE: PetBoxData[] = [
     name: "烟花团",
     pinyinName: "yanhuatuan",
     pinyinInitials: "yht",
-    hint: "一靠近盒子就听见热闹的噼啪声，此起彼伏，接着盒顶冒出了一朵朵小烟花",
+    hint: "一靠近盒子就听见热闹的噼啪声，此起副伏，接着盒顶冒出了一朵朵小烟花",
     hintInitials: "ykjhzjtjrndppscqbfjzhdmclyddxyh",
     keywords: ["烟花", "噼啪声", "此起批伏", "热闹", "小烟花"],
     keywordInitials: ["yh", "pps", "cqbf", "rn", "xyh"],
     themeColor: "from-red-600 to-orange-900 border-red-400/30",
     badgeColor: "bg-red-500/10 text-red-200 border-red-500/20",
     petIcon: "Sparkles",
-    description: "性格火辣又爱凑热闹的小家伙，随时随地都在自己头顶绽放噼里啪啦的小烟花。",
+    eggGroups: ["魔力组", "机械组"],
     attributes: "火/毒"
   },
   {
@@ -43,7 +43,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-teal-600 to-emerald-950 border-teal-500/30",
     badgeColor: "bg-teal-500/10 text-teal-200 border-teal-500/20",
     petIcon: "Waves",
-    description: "海底最热情的啦啦队长，挥舞着柔软的触须，伴随着咕噜咕噜的气泡给路过者加油打气！",
+    eggGroups: ["妖精组", "两栖组"],
     attributes: "水/萌"
   },
   {
@@ -58,7 +58,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-pink-600 to-rose-950 border-pink-400/30",
     badgeColor: "bg-pink-500/10 text-pink-200 border-pink-500/20",
     petIcon: "Disc",
-    description: "喜欢在七彩射灯下跳舞的蹦迪选手，身上的龙鳞在摇摆时会发出叮叮当当的清脆撞击声。",
+    eggGroups: ["动物组", "大地组"],
     attributes: "电/光"
   },
   {
@@ -73,7 +73,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-purple-600 to-violet-950 border-purple-400/30",
     badgeColor: "bg-purple-500/10 text-purple-200 border-purple-500/20",
     petIcon: "HelpCircle",
-    description: "戴着魔术高帽的怪诞魔术师，总是变出五彩缤纷的烟雾，让人琢磨不透下一秒会钻出什么。",
+    eggGroups: ["妖精组"],
     attributes: "幽"
   },
   {
@@ -88,7 +88,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-amber-500 to-amber-950 border-amber-400/30",
     badgeColor: "bg-amber-500/10 text-amber-200 border-amber-500/20",
     petIcon: "Smile",
-    description: "全洛克王国最幽默的红鼻子小丑，在盒子里练习杂技时，自己也常常忍不住乐得咯咯直笑。",
+    eggGroups: ["拟人组", "妖精组"],
     attributes: "恶"
   },
   {
@@ -103,7 +103,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-sky-600 to-indigo-950 border-sky-400/30",
     badgeColor: "bg-sky-500/10 text-sky-200 border-sky-500/20",
     petIcon: "Drum",
-    description: "随身携带魔法小鼓的憨厚象宝宝，步伐重重，能和小象鸣叫组合成动感十足的鼓点。",
+    eggGroups: ["机械组", "动物组"],
     attributes: "机械"
   },
   {
@@ -118,7 +118,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-slate-600 to-slate-900 border-slate-400/30",
     badgeColor: "bg-slate-500/10 text-slate-200 border-slate-500/20",
     petIcon: "Cpu",
-    description: "身着华丽木制外衣的冷酷发条玩偶，平时极度尊崇高雅，只在发条旋转时发出吱呀的声响。",
+    eggGroups: ["拟人组", "妖精组"],
     attributes: "幻"
   },
   {
@@ -133,7 +133,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-cyan-500 to-teal-950 border-cyan-400/30",
     badgeColor: "bg-cyan-500/10 text-cyan-200 border-cyan-500/20",
     petIcon: "Scale",
-    description: "天平两端绝对公正的守护者。致力于捍卫天下的终极绝对平衡，盒子歪一点它都会立刻调整回来！",
+    eggGroups: ["天空组"],
     attributes: "普通"
   },
   {
@@ -148,7 +148,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-blue-600 to-purple-950 border-blue-400/30",
     badgeColor: "bg-blue-500/10 text-blue-200 border-blue-500/20",
     petIcon: "Flame",
-    description: "体蕴极冻玄冰与九天烈火的神异灵狐，冰凉与炽热在其周身来回往复，四季保暖神宠。",
+    eggGroups: ["动物组"],
     attributes: "火/冰"
   },
   {
@@ -163,7 +163,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-purple-500 to-indigo-950 border-purple-400/30",
     badgeColor: "bg-purple-500/10 text-purple-200 border-purple-500/20",
     petIcon: "ShieldCheck",
-    description: "纯洁温和的高贵幻兽，拥有治愈悲伤的圣洁光环。鬃毛轻抚盒子，极容易使外部抚摸者神情安泰。",
+    eggGroups: ["巨灵组", "动物组"],
     attributes: "光"
   },
   {
@@ -178,7 +178,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-orange-600 to-red-950 border-orange-400/30",
     badgeColor: "bg-orange-500/10 text-orange-200 border-orange-500/20",
     petIcon: "Soup",
-    description: "生性急躁的大鼎炖锅，体内的汤汁一旦快乐起来就会像火山爆发般咕嘟咕嘟疯狂沸腾。",
+    eggGroups: ["妖精组", "大地组"],
     attributes: "毒"
   },
   {
@@ -193,7 +193,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-green-600 to-lime-950 border-green-400/30",
     badgeColor: "bg-green-500/10 text-green-200 border-green-500/20",
     petIcon: "Flower2",
-    description: "头顶盛开清雅小花，身体蕴藏甜梨汁液 of fruit, 自带清新怡人的自然香泽。",
+    eggGroups: ["植物组"],
     attributes: "萌"
   },
   {
@@ -208,7 +208,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-emerald-700 to-teal-950 border-emerald-500/30",
     badgeColor: "bg-emerald-500/10 text-emerald-200 border-emerald-500/20",
     petIcon: "TreePine",
-    description: "生活在迷之森林的古老小树妖，因为过于腼腆甚至想躲藏起来，但巨大的身板一动就会窸窣作响。",
+    eggGroups: ["植物组", "妖精组"],
     attributes: "幽/草"
   },
   {
@@ -221,9 +221,9 @@ export const PETS_DATABASE: PetBoxData[] = [
     keywords: ["喵叫", "快速跃起", "跑酷", "喵", "细微"],
     keywordInitials: ["mj", "ksyq", "pk", "m", "xw"],
     themeColor: "from-zinc-700 to-indigo-950 border-zinc-500/30",
-    badgeColor: "bg-indigo-500/10 text-indigo-200 border-indigo-500/20",
+    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
     petIcon: "Cat",
-    description: "身穿黑披风、速度惊人的暗影刺客萌猫，酷爱闪展腾挪的猫咪极限运动！",
+    eggGroups: ["拟人组", "妖精组"],
     attributes: "恶"
   },
   {
@@ -238,7 +238,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-purple-800 to-rose-950 border-purple-500/30",
     badgeColor: "bg-purple-500/10 text-purple-200 border-purple-500/20",
     petIcon: "Ghost",
-    description: "调皮大王，一分钟安分不下来，正在盒子里把自己当橡皮弹珠一样乒乒乓乓疯狂弹跳！",
+    eggGroups: ["妖精组"],
     attributes: "恶/翼"
   },
   {
@@ -253,7 +253,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-orange-600 to-red-950 border-orange-500/30",
     badgeColor: "bg-red-500/10 text-red-200 border-red-500/20",
     petIcon: "Flame",
-    description: "盒子里传出火焰噼啪的闷响，温度滚烫，隐藏着一团随时可能爆发的炽热小焰火。",
+    eggGroups: [],
     attributes: "火/龙"
   },
   {
@@ -268,7 +268,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-sky-500 to-blue-950 border-sky-400/30",
     badgeColor: "bg-sky-500/10 text-sky-200 border-sky-500/20",
     petIcon: "Info",
-    description: "盒子表面积了一层厚厚的白雪，两侧还能看见探出来的树枝状小手，充满了冬日的雪意。",
+    eggGroups: [],
     attributes: "冰"
   },
   {
@@ -283,7 +283,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-emerald-600 to-lime-950 border-emerald-500/30",
     badgeColor: "bg-emerald-500/10 text-emerald-200 border-emerald-500/20",
     petIcon: "Heart",
-    description: "像蒲公英般毛茸茸的草系小宠物，超级喜欢亲近人，靠过去的时候总会温柔地蹭你的手掌。",
+    eggGroups: [],
     attributes: "光/虫"
   },
   {
@@ -298,7 +298,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-sky-500 to-indigo-950 border-sky-400/30",
     badgeColor: "bg-sky-500/10 text-sky-200 border-sky-500/20",
     petIcon: "Bird",
-    description: "长着威武额角的小飞鸟。虽然体型不大，但额头上的犀角极其坚硬，喜欢在盒子里顶来顶去。",
+    eggGroups: [],
     attributes: "光"
   },
   {
@@ -313,7 +313,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-rose-600 to-red-950 border-rose-500/30",
     badgeColor: "bg-rose-500/10 text-rose-200 border-rose-500/20",
     petIcon: "Flame",
-    description: "奔跑如飞的热血马驹，身上的鬃毛在高速移动中会化作绚丽火焰，沿途留下一长串璀璨星火。",
+    eggGroups: ["动物组"],
     attributes: "火"
   },
   {
@@ -328,7 +328,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-yellow-600 to-orange-950 border-yellow-500/30",
     badgeColor: "bg-yellow-500/10 text-yellow-200 border-yellow-500/20",
     petIcon: "Dribbble",
-    description: "晶莹剔透的水系胶状萌物，身体极度滑润软弹，哪怕微弱的晃动，它都在里面随着节拍摇摇晃晃。",
+    eggGroups: [],
     attributes: "水"
   },
   {
@@ -343,7 +343,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-violet-800 to-indigo-950 border-violet-500/30",
     badgeColor: "bg-violet-500/10 text-violet-200 border-violet-500/20",
     petIcon: "Moon",
-    description: "披着夜空轻纱的幼小微光之虫，爬行时会摩擦出微弱荧光，从隙缝看去犹如流星掠过。",
+    eggGroups: [],
     attributes: "虫"
   },
   {
@@ -358,7 +358,7 @@ export const PETS_DATABASE: PetBoxData[] = [
     themeColor: "from-zinc-700 to-zinc-950 border-zinc-500/30",
     badgeColor: "bg-zinc-500/10 text-zinc-200 border-zinc-500/20",
     petIcon: "HelpCircle",
-    description: "无法被归类的神秘幽之物。因为没有特定属性，它能顺从并匹配任何您发送的搜寻指令！",
+    eggGroups: [],
     attributes: ""
   }
 ];

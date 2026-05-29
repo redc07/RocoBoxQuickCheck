@@ -83,11 +83,14 @@ export default function App() {
       // 8. Element Attributes Match (e.g., "火" or "机械")
       const isAttributeMatch = pet.attributes.toLowerCase().includes(queryClean);
 
+      // 9. Egg Groups Match (e.g., "动物组" or "机械端")
+      const isEggGroupMatch = pet.eggGroups && pet.eggGroups.some(eg => eg.toLowerCase().includes(queryClean));
+
       const isMatched = pet.id === "other" ||
                         isNameMatch || isHintMatch || isPinyinMatch || 
                         isPinyinInitialsMatch || isKeywordMatch || 
                         isKeywordInitialsMatch || isHintInitialsMatch ||
-                        isAttributeMatch;
+                        isAttributeMatch || isEggGroupMatch;
 
       return { pet, isMatched };
     });
